@@ -96,13 +96,14 @@
     clippy::useless_let_if_seq
 )]
 
-mod conv;
 mod kyoku_filter;
 mod macros;
 mod mjai;
 mod tile;
 
+pub mod conv;
 pub mod tenhou;
+pub mod args;
 
 pub use conv::tenhou_to_mjai;
 pub use conv::ConvertError;

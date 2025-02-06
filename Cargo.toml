@@ -1,7 +1,6 @@
 [package]
 name = "convlog"
 version = "0.2.0"
-authors = ["Equim <sayaka@ekyu.moe>"]
 edition = "2021"
 
 [dependencies]
@@ -13,3 +12,7 @@ num_enum = "0.7"
 ahash = "0.8"
 serde_with = "3"
 serde = { version = "1", features = ["derive"] }
+clap = { version = "4", features = ["derive"] }
+
+[dev-dependencies]
+tempfile = "3.10"
