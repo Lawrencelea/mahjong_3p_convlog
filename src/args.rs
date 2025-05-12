@@ -7,5 +7,5 @@ pub struct ConvCli {
     pub input: String,
 
     #[arg(short, long)]
-    pub output:String,
+    pub output: String,
 }

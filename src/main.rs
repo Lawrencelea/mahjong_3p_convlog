@@ -17,23 +17,29 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn convert(input: &str, output: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let json_str = std::fs::read_to_string(Path::new(input)).unwrap();
-        let json: Value = json::from_str(&json_str).unwrap();
+    let input_path = Path::new(input);
+    let json_str = std::fs::read_to_string(input_path).unwrap();
+    let json: Value = json::from_str(&json_str).unwrap();
 
-        let file_id = json.get("ref")
-            .and_then(Value::as_str)
-            .ok_or("Invalid JSON")?;
-        let filepath = Path::new(&output).join(format!("{}.json", file_id));
+    let file_id = json.get("ref")
+        .and_then(Value::as_str)
+        .ok_or("Invalid JSON")?;
+    let filepath = Path::new(&output).join(format!("{}.json", file_id));
 
-        let tenhou_log = Log::from_json_str(&json_str).unwrap();
-        let mjai_log = tenhou_to_mjai(&tenhou_log)?;
+    let tenhou_log = Log::from_json_str(&json_str).unwrap();
+    let mjai_log = tenhou_to_mjai(&tenhou_log)?;
 
-        let mut w: Box<dyn std::io::Write> = Box::new(std::fs::File::create(filepath)?);
-        for event in mjai_log {
-            let event_str = json::to_string(&event)?;
+    let mut w: Box<dyn std::io::Write> = Box::new(std::fs::File::create(filepath)?);
+    writeln!(w, "[")?;
+    for (i, event) in mjai_log.iter().enumerate() {
+        let event_str = json::to_string(event)?;
+        if i < mjai_log.len() - 1 {
+            writeln!(w, "{},", event_str)?;
+        } else {
             writeln!(w, "{}", event_str)?;
-
+        }
     }
+    writeln!(w, "]")?;
     Ok(())   
 }
 
@@ -46,12 +52,11 @@ fn get_filename_list(path: &str) -> Vec<String> {
         if path.is_file() {
             if let Some(filename) = path.file_name().and_then(|s| s.to_str()) {
                 if filename.ends_with(".json") {
-                    filenames.push(filename.to_string());
+                    filenames.push(path.to_str().unwrap().to_string());
                 }
             }
         }
     }
-    // dbg!(&filenames);
     filenames
 }
 
